@@ -14,8 +14,6 @@ import sys
 import pandas as pd
 pd.options.mode.chained_assignment = None  # avoid SettingWithCopy Warning
 
-    
-
 from flask import Flask, send_from_directory, render_template, request, jsonify, redirect, url_for
 # Flask documents office site: https://flask.palletsprojects.com/en/1.1.x/
 from flask_bootstrap import Bootstrap
@@ -53,14 +51,17 @@ import numpy as np
 
 
 ###    00.2  -  Parameters :
-repository = os.path.join(os.getcwd(),"PycharmProjects\FitnessData_Project")
+repository = os.path.join(os.getcwd())
 rep_data = os.path.join(repository,"00_Data")
-#print(rep_data)
+#rep_data = os.path.join(repository,"PycharmProjects\\FitnessData_Project\\00_Data")
+print(rep_data)
 
 activities_file = 'activities.csv'
 
 
-
+# Instantiate Bootstrap: to Help directly apply ready-made template html page.
+app = Flask(__name__)
+bootstrap = Bootstrap(app)
 
 ###    00.3  -  SQLite settinngs :
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite3.db'  # The database URI that should be used for the connection.
@@ -71,8 +72,20 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)  # Cache time is 
 ########################################################################################################################
 ###    01  -     DATAMANAGEMENT :                                                                                    ###
 ########################################################################################################################
-df_activities = pd.read_csv(os.path.join(rep_data,activities_file))
+pysqldf = lambda q: sqldf(q, globals())  # Use sql with Pandas and avoid specifying everytime
 
+# Lecture de la table
+df_activities = pd.read_csv(os.path.join(rep_data,activities_file))
+print(df_activities.columns.values)
+
+# KPIS aggrégés
+Activities_AGG = """  select distinct "Type d'activité" , 
+                                      count("ID de l'activité") as N_activities  
+                      FROM df_activities
+                        group by "Type d'activité"
+
+                                       ; """
+df_Activities_AGG = pysqldf(Activities_AGG)
 
 ########################################################################################################################
 ###    02  -     DB ENGINE and ROOTS :                                                                               ###
@@ -90,7 +103,24 @@ def create_DB():
 ###   2.2  -     Create engine to connect with Sqlite
 engine = create_engine("sqlite:///sqlite3.db", encoding='utf-8')  # To final say the SQLAlchemy engine is created with Sqlite3
 #data_stock.to_sql('data_stock', con=engine2, if_exists='replace', index=False)
-df_activities.to_sql('df_activities', con=engine, if_exists='replace', index=False)
+df_Activities_AGG.to_sql('df_Activities_AGG', con=engine, if_exists='replace', index=False)
+
+###   2.3 -     Show first html home page with overview graphic
+@app.route("/")
+def FitnessData_overwiew():
+    DATA_ACTIVITES_AGG = pd.read_sql("""
+                                select distinct "Type d'activité" , 
+                                                N_activities as N_activities_cycle
+    
+                                from df_Activities_AGG
+                                where "Type d'activité" = 'Vélo'
+
+                                    ;
+                                """, con=engine)
+
+    return render_template("FitnessData_overwiew.html",
+                               DATA_ACTIVITES_AGG=DATA_ACTIVITES_AGG,
+                           )
 
 ########################################################################################################################
 ###    04  -     Run total Project DATAVIZ                                                                           ###
