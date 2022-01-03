@@ -1,27 +1,44 @@
 <!--   1.0 -         Extends the the unified part from base.html                            -->
 {% extends "base.html" %}
 {% block book %}
-
-           <div class="" style="padding:30px; margin-top: 1.5rem;" >
+           <div class="" >
                 <div class="">
-                    <div class="">
+                    <div class="" style="padding:30px; margin-top: 1.5rem;">
                         Main Activities KPIS
                     </div>
                 </div>
                 <div >
-                    <div class="" data-table_id="">
-                        <header>
-                            <div class="">
-                                    <div class="" style="background-color:white;"></div>
-                                    <div class="" >2021 YTD</div>
-                           </div>
-                        </header>
-                        <div class="st_table">
-                            <div class="st_row">
-                                <div class="">Cycle</div>
-                                <div class=""  style="background-color:#d3d3d3;">{{DATA_ACTIVITES_AGG["N_activities_cycle"][0]}}</div>
-                            </div>
-                        </div>
+                    <div class="" data-table_id="" style="padding:20px; margin-bottom: 1.5rem;">
+                        <style>
+                          table, th, td {
+                          padding: 10px;
+                          border: 1px solid black;
+                          border-collapse: collapse;
+                          }
+                        </style>
+                        <table>
+                          <tr>
+                            <td>Période</td>
+                            <td>Cycle</td>
+                            <td>Course</td>
+                            <td>PPG</td>
+                            <td>Boxe</td>
+                          </tr>
+                          <tr>
+                            <td>2021 YTD</td>
+                            <td>{{DATA_ACTIVITES_AGG["N_activities_cycle"][0]}}</td>
+                            <td>{{DATA_ACTIVITES_AGG["N_activities_cycle"][0]}}</td>
+                            <td>{{DATA_ACTIVITES_AGG["N_activities_cycle"][0]}}</td>
+                            <td>{{DATA_ACTIVITES_AGG["N_activities_cycle"][0]}}</td>
+                          </tr>
+                          <tr>
+                            <td>2020 YTD</td>
+                            <td>{{DATA_ACTIVITES_AGG["N_activities_cycle"][0]}}</td>
+                            <td>{{DATA_ACTIVITES_AGG["N_activities_cycle"][0]}}</td>
+                            <td>{{DATA_ACTIVITES_AGG["N_activities_cycle"][0]}}</td>
+                            <td>{{DATA_ACTIVITES_AGG["N_activities_cycle"][0]}}</td>
+                          </tr>
+                        </table>
                     </div>
                 </div>
             </div>
